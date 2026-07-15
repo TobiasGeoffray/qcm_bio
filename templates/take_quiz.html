@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passer le QCM - {{ quiz.title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="tk_quiz">
+    <div class="container">
+        <div class="timer-container">
+            <div class="timer-display">
+                <span class="timer-label">Temps écoulé:</span>
+                <span class="timer-value" id="timer">00:00</span>
+            </div>
+        </div>
+        <h1>{{ quiz.title }}</h1>
+        <form method="POST" action="{{ url_for('take_quiz', quiz_id=quiz.id) }}" id="quiz-form">
+            {% for question in questions %}
+                {% set q_index = loop.index0 %}
+                <div class="question">
+                    <h3>{{ question.text }}</h3>
+                    <!-- Boutons radio pour toutes les réponses, dans un ordre mélangé -->
+                    {% for answer in question.all_answers %}
+                        <input type="radio" name="answer_{{ q_index }}" value="{{ answer }}" {% if loop.first %}required{% endif %}>
+                        <label>{{ answer }}</label><br>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <input type="hidden" id="time-taken" name="time_taken" value="0">
+            <button type="submit">Valider les réponses</button>
+        </form>
+    </div>
+
+    <script>
+        let seconds = 0;
+        const timerDisplay = document.getElementById('timer');
+        const timeTakenInput = document.getElementById('time-taken');
+        const quizForm = document.getElementById('quiz-form');
+
+        function updateTimer() {
+            seconds++;
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            timerDisplay.textContent =
+                String(minutes).padStart(2, '0') + ':' +
+                String(secs).padStart(2, '0');
+        }
+
+        function startTimer() {
+            setInterval(updateTimer, 1000);
+        }
+
+        // Met à jour le champ caché avant la soumission
+        quizForm.addEventListener('submit', function(e) {
+            timeTakenInput.value = seconds;
+        });
+
+        // Démarre le timer au chargement
+        startTimer();
+    </script>
+</body>
+</html>

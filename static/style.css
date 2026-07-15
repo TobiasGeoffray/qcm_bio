@@ -1,0 +1,220 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+}
+
+a {
+    color: black;
+}
+
+h1, h2, h3 {
+    color : #d4edda;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #0056b3;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+input, button {
+    padding: 10px;
+    margin: 5px 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+button {
+    background: #007BFF;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+.alert {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+}
+
+.alert-success {
+    background: #d4edda;
+    color: #155724;
+}
+
+.alert-error {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.question {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+}
+
+.success {
+    color: white;
+    font-weight: bold;
+}
+
+.partial {
+    color: orange;
+    font-weight: bold;
+}
+
+.fail {
+    color: red;
+    font-weight: bold;
+}
+
+.correct {
+    color: green;
+}
+
+.incorrect {
+    color: red;
+}
+
+.question-result {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+}
+
+.scores-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+
+.scores-table th, .scores-table td {
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.scores-table th {
+    background: #099414;
+    color: white;
+}
+
+.scores-table tr:nth-child(even) {
+    background: #f9f9f9;
+}
+
+/* Permet au tableau de défiler horizontalement sans casser la mise en page sur mobile */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 15px 0;
+}
+
+.table-responsive .scores-table {
+    margin: 0;
+    min-width: 480px; /* le tableau garde une largeur lisible, on scroll plutôt que d'écraser */
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 12px;
+    }
+
+    h1 {
+        font-size: 1.3em;
+    }
+
+    h2 {
+        font-size: 1.1em;
+    }
+
+    .scores-table th, .scores-table td {
+        padding: 6px 8px;
+        font-size: 0.85em;
+    }
+}
+
+.tk_quiz {
+    background-image: url(https://us.123rf.com/450wm/macrovector/macrovector2008/macrovector200800385/154124087-motif-abstrait-color%C3%A9-compos%C3%A9-de-lumi%C3%A8res-rougeoyantes-et-d-images-luminescentes-de-plancton-marin.jpg?ver=6);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.db {
+    background-image: url(https://img.magnific.com/vecteurs-premium/ensemble-doodle-biologie-collection-elements-dessines-main-science-biologie-isole-fond-blanc_308665-1569.jpg?semt=ais_hybrid&w=740&q=80);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.login-page {
+    background-image: url(https://img.magnific.com/photos-premium/tapisserie-microbienne-vibrante-vitrine-fascinante-ecosysteme-sous-marin_1287633-7672.jpg?semt=ais_hybrid&w=740&q=80);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.results {
+    background-image: url(https://img.magnific.com/photos-premium/tapisserie-microbienne-vibrante-vitrine-fascinante-ecosysteme-sous-marin_1287633-7672.jpg?semt=ais_hybrid&w=740&q=80);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.create_quiz {
+    background-image: url(meduses-1.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+/* Styles pour le timer */
+.timer-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.timer-display {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+}
+
+.timer-label {
+    color: #d4edda;
+}
+
+.timer-value {
+    font-size: 24px;
+    color: #fff;
+    font-family: 'Courier New', monospace;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 5px 10px;
+    border-radius: 4px;
+    min-width: 60px;
+    text-align: center;
+}

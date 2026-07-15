@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Résultats - {{ quiz.title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="results">
+    <div class="container">
+        <h1>Résultats pour le QCM : {{ quiz.title }}</h1>
+            <p>Ton score : <strong>{{ result.score }} / {{ questions|length }}</strong></p>
+            <p>Temps écoulé : <strong>
+                {%- set minutes = result.time_taken // 60 -%}
+                {%- set seconds = result.time_taken % 60 -%}
+                {{ "%02d:%02d"|format(minutes, seconds) }}
+            </strong></p>
+        {% if result.score == questions|length %}
+            <p class="success">🎉 Félicitations, tu as tout bon !</p>
+        {% elif result.score >= (questions|length / 2) %}
+            <p class="partial">👍 Pas mal, mais tu peux faire mieux !</p>
+        {% else %}
+            <p class="fail">😢 Il faut réviser !</p>
+        {% endif %}
+        <h2>Détail des questions</h2>
+        <div class="questions-list">
+            {% for question in questions %}
+                {% set idx = loop.index0 %}
+                {% set user_answer = user_answers[idx|string] if (idx|string) in user_answers else (user_answers[idx] if idx in user_answers else None) %}
+                <div class="question-result">
+                    <h3>Q{{ loop.index }}. {{ question.text }}</h3>
+                    <p>Ta réponse :
+                        {% if user_answer %}
+                            {% if user_answer == question.correct_answer %}
+                                <span class="correct">{{ user_answer }}</span>
+                            {% else %}
+                                <span class="incorrect">{{ user_answer }}</span>
+                            {% endif %}
+                        {% else %}
+                            <em>Non répondu</em>
+                        {% endif %}
+                    </p>
+                    <p>Réponse correcte : <strong>{{ question.correct_answer }}</strong></p>
+                    {% if question.explanation %}
+                        <p><em>Explication :</em> {{ question.explanation }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <a href="{{ url_for('dashboard') }}" class="button">Retour au tableau de bord</a>
+    </div>
+</body>
+</html>

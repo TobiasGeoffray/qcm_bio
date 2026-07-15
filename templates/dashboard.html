@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord - QCM</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="db">
+    <div class="container">
+        <h1>Bienvenue, {{ session.username if 'user_id' in session else 'Invité' }} !</h1>
+        <a href="{{ url_for('logout') }}">Déconnexion</a>
+        {% if is_admin %}
+            <h2>Créer un QCM</h2>
+            <a href="{{ url_for('create_quiz') }}" class="button">Nouveau QCM</a>
+        {% endif %}
+        <h2>QCM disponibles</h2>
+        <ul>
+            {% for quiz in quizzes %}
+                <li>
+                    <a href="{{ url_for('take_quiz', quiz_id=quiz.id) }}">{{ quiz.title }}</a>
+                    {% if is_admin %}
+                        <form method="POST" action="{{ url_for('delete_quiz', quiz_id=quiz.id) }}" style="display:inline;" onsubmit="return confirm('Supprimer ce QCM ? Cette action est irréversible.');">
+                            <button type="submit" style="width:auto; padding:4px 10px; background:#dc3545;">Supprimer</button>
+                        </form>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+        <h2>🏆 Classement général</h2>
+        {% if leaderboard %}
+            <div class="table-responsive">
+            <table class="scores-table">
+                <thead>
+                    <tr>
+                        <th>Rang</th>
+                        <th>Utilisateur</th>
+                        <th>Score total</th>
+                        <th>Moyenne</th>
+                        <th>QCM réalisés</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for username, total_score, nb_quiz, total_possible in leaderboard %}
+                        <tr>
+                            <td>
+                                {% if loop.index == 1 %}🥇
+                                {% elif loop.index == 2 %}🥈
+                                {% elif loop.index == 3 %}🥉
+                                {% else %}{{ loop.index }}
+                                {% endif %}
+                            </td>
+                            <td>{{ username }}</td>
+                            <td>{{ total_score }} / {{ total_possible }}</td>
+                            <td>
+                                {% if total_possible > 0 %}
+                                    {{ (total_score * 100 / total_possible) | round(2) }} %
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </td>
+                            <td>{{ nb_quiz }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        {% else %}
+            <p>Aucun score enregistré pour le moment.</p>
+        {% endif %}
+        <h2>📋 Détail des scores</h2>
+        {% if all_results %}
+            <div class="table-responsive">
+            <table class="scores-table">
+                <thead>
+                    <tr>
+                        <th>Utilisateur</th>
+                        <th>QCM</th>
+                        <th>Score</th>
+                        <th>Temps</th>
+                        <th>Date &amp; Heure</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for username, quiz_title, score, timestamp, time_taken, total_questions in all_results %}
+                        <tr>
+                            <td>{{ username }}</td>
+                            <td>{{ quiz_title }}</td>
+                            <td>{{ score }} / {{ total_questions }}</td>
+                            <td>
+                                {%- set minutes = time_taken // 60 -%}
+                                {%- set seconds = time_taken % 60 -%}
+                                {{ "%02d:%02d"|format(minutes, seconds) }}
+                            </td>
+                            <td>{{ timestamp.strftime('%d/%m/%Y %H:%M') }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        {% else %}
+            <p>Aucun résultat pour le moment.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
