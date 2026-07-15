@@ -84,6 +84,7 @@ def dashboard():
     # Construire un leaderboard détaillé avec le total possible (nombre de questions jouées)
     import json as _json
     leaderboard = []
+    # Construire les lignes du leaderboard en calculant le total possible (nombre de questions jouées)
     for username, total_score, nb_quiz in leaderboard_raw:
         user = User.query.filter_by(username=username).first()
         total_possible = 0
@@ -97,7 +98,22 @@ def dashboard():
                         total_possible += len(qs)
                     except Exception:
                         pass
-        leaderboard.append((username, total_score, nb_quiz, total_possible))
+        # Calcul de la moyenne en pourcentage (0 si total_possible == 0)
+        average_pct = (total_score / total_possible) if total_possible > 0 else 0
+        leaderboard.append({
+            'username': username,
+            'total_score': total_score,
+            'nb_quiz': nb_quiz,
+            'total_possible': total_possible,
+            'average_pct': average_pct
+        })
+
+    # Trier le leaderboard par moyenne décroissante (puis, par score total en cas d'égalité)
+    leaderboard = sorted(
+        leaderboard,
+        key=lambda u: (u['average_pct'], u['total_score']),
+        reverse=True
+    )
 
     # Détail de tous les résultats individuels (utilisateur / QCM / score / date)
     # On récupère aussi l'ID du quiz pour déterminer le nombre total de questions

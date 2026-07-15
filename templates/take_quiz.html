@@ -22,8 +22,10 @@
                     <h3>{{ question.text }}</h3>
                     <!-- Boutons radio pour toutes les réponses, dans un ordre mélangé -->
                     {% for answer in question.all_answers %}
-                        <input type="radio" name="answer_{{ q_index }}" value="{{ answer }}" {% if loop.first %}required{% endif %}>
-                        <label>{{ answer }}</label><br>
+                        <div class="answer-option">
+                            <input class='button_quiz' type="radio" name="answer_{{ q_index }}" value="{{ answer }}" {% if loop.first %}required{% endif %}>
+                            <label class="quiz-label">{{ answer }}</label>
+                        </div>
                     {% endfor %}
                 </div>
             {% endfor %}

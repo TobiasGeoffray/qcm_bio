@@ -16,11 +16,11 @@
                 {{ "%02d:%02d"|format(minutes, seconds) }}
             </strong></p>
         {% if result.score == questions|length %}
-            <p class="success">🎉 Félicitations, tu as tout bon !</p>
+            <p class="success">🐯 T'y es un Tigre le sang! 🐯</p>
         {% elif result.score >= (questions|length / 2) %}
-            <p class="partial">👍 Pas mal, mais tu peux faire mieux !</p>
+            <p class="partial">👍 Pas trop mal, peux mieux faire!</p>
         {% else %}
-            <p class="fail">😢 Il faut réviser !</p>
+            <p class="fail">😢 Continu les études !</p>
         {% endif %}
         <h2>Détail des questions</h2>
         <div class="questions-list">

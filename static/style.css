@@ -3,14 +3,24 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f4f4f9;
+    fallback : sans-serif;
+    font-family : Arial,sans-serif;
+    color: black;
 }
 
 a {
-    color: black;
+    color: coral;
+    font-weight: bold ;
+    text-decoration-color: #d4edda; ;
 }
 
 h1, h2, h3 {
     color : #d4edda;
+}
+
+ul {
+    color:coral;
+    list-style-type: none;
 }
 
 .container {
@@ -56,10 +66,10 @@ button:hover {
 }
 
 .question {
-    border: 1px solid #ddd;
+    border: 2px solid #ddd;
     padding: 10px;
     margin: 10px 0;
-    border-radius: 4px;
+    border-radius: 10px;
 }
 
 .success {
@@ -78,18 +88,20 @@ button:hover {
 }
 
 .correct {
-    color: green;
+    color: limegreen;
+    font-weight: bold;
 }
 
 .incorrect {
-    color: red;
+    color: darkred;
+    font-weight: bold;
 }
 
 .question-result {
-    border: 1px solid #ddd;
+    border: 2px solid #ddd;
     padding: 10px;
     margin: 10px 0;
-    border-radius: 4px;
+    border-radius: 10px;
 }
 
 .scores-table {
@@ -217,4 +229,48 @@ button:hover {
     border-radius: 4px;
     min-width: 60px;
     text-align: center;
+}
+
+/* Wrapper pour aligner input radio et label */
+.answer-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 8px 0;
+}
+
+.button_quiz {
+    margin: 0;
+    width: auto;
+    padding: 0;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.quiz-label {
+    margin: 0;
+    flex: 1;
+    display: inline-block;
+    cursor: pointer;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    color : lightcoral;
+}
+
+@media (max-width: 600px) {
+    .answer-option {
+        gap: 8px;
+        margin: 6px 0;
+    }
+
+    .button_quiz {
+        min-width: 20px;
+        min-height: 20px;
+    }
+}
+
+.success, .partial, .fail {
+    font-size : 22px;
+    margin-left: auto;
+    margin-right:auto;
 }

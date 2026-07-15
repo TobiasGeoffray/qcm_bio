@@ -7,7 +7,7 @@ function addQuestion() {
         <input type="text" name="correct_answer[]" placeholder="Bonne réponse" required>
         <input type="text" name="wrong_answer_1[]" placeholder="Mauvaise réponse 1" required>
         <input type="text" name="wrong_answer_2[]" placeholder="Mauvaise réponse 2" required>
-        <textarea name="explanation[]" placeholder="Explication / correction (visible dans les résultats)" rows="2"></textarea>
+        <textarea name="explanation[]" placeholder="Explication" rows="2" style="width:70%;margin-top: 5px;"></textarea>
     `;
     container.appendChild(newQuestion);
 }

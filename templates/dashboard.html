@@ -18,10 +18,10 @@
         <ul>
             {% for quiz in quizzes %}
                 <li>
-                    <a href="{{ url_for('take_quiz', quiz_id=quiz.id) }}">{{ quiz.title }}</a>
+                    <a style="max-width:70%;" href="{{ url_for('take_quiz', quiz_id=quiz.id) }}">{{ quiz.title }} </a>
                     {% if is_admin %}
                         <form method="POST" action="{{ url_for('delete_quiz', quiz_id=quiz.id) }}" style="display:inline;" onsubmit="return confirm('Supprimer ce QCM ? Cette action est irréversible.');">
-                            <button type="submit" style="width:auto; padding:4px 10px; background:#dc3545;">Supprimer</button>
+                            <button type="submit" style="width:auto; padding:4px 10px; background: palevioletred;margin-left: 70%;margin-right: auto  ">Supprimer</button>
                         </form>
                     {% endif %}
                 </li>
@@ -41,7 +41,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for username, total_score, nb_quiz, total_possible in leaderboard %}
+                    {% for entry in leaderboard %}
                         <tr>
                             <td>
                                 {% if loop.index == 1 %}🥇
@@ -50,16 +50,16 @@
                                 {% else %}{{ loop.index }}
                                 {% endif %}
                             </td>
-                            <td>{{ username }}</td>
-                            <td>{{ total_score }} / {{ total_possible }}</td>
+                            <td>{{ entry.username }}</td>
+                            <td>{{ entry.total_score }} / {{ entry.total_possible }}</td>
                             <td>
-                                {% if total_possible > 0 %}
-                                    {{ (total_score * 100 / total_possible) | round(2) }} %
+                                {% if entry.total_possible > 0 %}
+                                    {{ (entry.total_score * 100 / entry.total_possible) | round(2) }} %
                                 {% else %}
                                     N/A
                                 {% endif %}
                             </td>
-                            <td>{{ nb_quiz }}</td>
+                            <td>{{ entry.nb_quiz }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
