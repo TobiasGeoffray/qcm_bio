@@ -14,7 +14,8 @@
                 <span class="timer-value" id="timer">00:00</span>
             </div>
         </div>
-        <h1>{{ quiz.title }}</h1>
+        <h1 style="display: inline-block">{{ quiz.title }}</h1>
+        <img src="{{ url_for('static', filename='dorry.png') }}" style="margin-left: 80%;width: max(32px,7%);image-rendering: pixelated;">
         <form method="POST" action="{{ url_for('take_quiz', quiz_id=quiz.id) }}" id="quiz-form">
             {% for question in questions %}
                 {% set q_index = loop.index0 %}

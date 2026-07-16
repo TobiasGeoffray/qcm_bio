@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ cour.title }} - Visualisation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+        .viewer-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 0;
+            margin: 0;
+        }
+        .viewer-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .viewer-header h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+        .viewer-controls {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-action {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+        }
+        .btn-download {
+            background-color: #27ae60;
+            color: white;
+        }
+        .btn-download:hover {
+            background-color: #229954;
+        }
+        .btn-back {
+            background-color: #3498db;
+            color: white;
+        }
+        .btn-back:hover {
+            background-color: #2980b9;
+        }
+        .pdf-viewer {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .pdf-viewer iframe {
+            border: none;
+            width: 100%;
+            height: 100%;
+            flex: 1;
+        }
+        .viewer-footer {
+            background-color: #ecf0f1;
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="viewer-container">
+        <div class="viewer-header">
+            <h1>📖 {{ cour.title }}</h1>
+            <div class="viewer-controls">
+                <a href="{{ url_for('download_cour', cour_id=cour.id) }}" class="btn-action btn-download">⬇️ Télécharger</a>
+                <a href="{{ url_for('dashboard') }}" class="btn-action btn-back">◀ Retour</a>
+            </div>
+        </div>
+
+        <div class="pdf-viewer">
+            <iframe src="{{ pdf_url }}" type="application/pdf"></iframe>
+        </div>
+
+        <div class="viewer-footer">
+            <p>💡 Conseil : Si le PDF ne s'affiche pas correctement, cliquez sur le bouton "Télécharger" pour l'ouvrir avec votre lecteur PDF préféré.</p>
+        </div>
+    </div>
+</body>
+</html>
+

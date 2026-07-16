@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter un cours - QCM</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        .button-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .button-container button,
+        .button-container a {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .button-container button {
+            background-color: #007bff;
+            color: white;
+        }
+        .button-container button:hover {
+            background-color: #0056b3;
+        }
+        .button-container a {
+            background-color: #6c757d;
+            color: white;
+        }
+        .button-container a:hover {
+            background-color: #545b62;
+        }
+    </style>
+</head>
+<body class="db">
+    <div class="container">
+        <h1>Ajouter un nouveau cours</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="form-container">
+            <form method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="title">Titre du cours</label>
+                    <input type="text" id="title" name="title" required placeholder="Ex: Introduction à la biologie marine">
+                </div>
+
+                <div class="form-group">
+                    <label for="pdf_file">Fichier PDF</label>
+                    <input type="file" id="pdf_file" name="pdf_file" accept=".pdf" required>
+                </div>
+
+                <div class="button-container">
+                    <button type="submit">Ajouter le cours</button>
+                    <a href="{{ url_for('dashboard') }}">Retour</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+

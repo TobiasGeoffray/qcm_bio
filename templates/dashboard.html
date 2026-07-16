@@ -9,7 +9,12 @@
 <body class="db">
     <div class="container">
         <h1>Bienvenue, {{ session.username if 'user_id' in session else 'Invité' }} !</h1>
-        <a href="{{ url_for('logout') }}">Déconnexion</a>
+        <div class="poissons">
+        <img src="{{ url_for('static', filename='globe.png') }}" style="margin-left: 10%;width: 20%;image-rendering: pixelated;">
+        <img src="{{ url_for('static', filename='dorry.png') }}" style="margin-left: 5%;width: 10%;image-rendering: pixelated;">
+        <img src="{{ url_for('static', filename='dragon.png') }}" style="margin-left: 10%;width: 10%;image-rendering: pixelated;">
+        <img src="{{ url_for('static', filename='hippocampe.png') }}" style="margin-left: 3%;width: 20%;image-rendering: pixelated;">
+        </div>
         {% if is_admin %}
             <h2>Créer un QCM</h2>
             <a href="{{ url_for('create_quiz') }}" class="button">Nouveau QCM</a>
@@ -21,7 +26,24 @@
                     <a style="max-width:70%;" href="{{ url_for('take_quiz', quiz_id=quiz.id) }}">{{ quiz.title }} </a>
                     {% if is_admin %}
                         <form method="POST" action="{{ url_for('delete_quiz', quiz_id=quiz.id) }}" style="display:inline;" onsubmit="return confirm('Supprimer ce QCM ? Cette action est irréversible.');">
-                            <button type="submit" style="width:auto; padding:4px 10px; background: palevioletred;margin-left: 70%;margin-right: auto  ">Supprimer</button>
+                            <button type="submit" style="width:auto; padding:4px 10px; background: palevioletred;margin-left: 70%;margin-right: 20%;">Supprimer</button>
+                        </form>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+        <h2>📚 Cours disponibles</h2>
+        {% if is_admin %}
+            <a href="{{ url_for('create_cour') }}" class="button">Ajouter un cours</a>
+        {% endif %}
+        <ul>
+            {% for cour in cours %}
+                <li>
+                    <a style="max-width:50%;" href="{{ url_for('view_cour', cour_id=cour.id) }}">{{ cour.title }}</a>
+                    <a href="{{ url_for('download_cour', cour_id=cour.id) }}" style="width:auto; padding:4px 10px; background: #27ae60; color:white; border:none; border-radius:4px; cursor:pointer; text-decoration:none; display:inline-block; margin-left: 5%;">⬇️ Télécharger</a>
+                    {% if is_admin %}
+                        <form method="POST" action="{{ url_for('delete_cour', cour_id=cour.id) }}" style="display:inline;" onsubmit="return confirm('Supprimer ce cours ? Cette action est irréversible.');">
+                            <button type="submit" style="width:auto; padding:4px 10px; background: palevioletred;margin-left: 5%;margin-right: 20%;">Supprimer</button>
                         </form>
                     {% endif %}
                 </li>
@@ -101,6 +123,7 @@
         {% else %}
             <p>Aucun résultat pour le moment.</p>
         {% endif %}
+        <a href="{{ url_for('logout') }}" style="display: block; text-align: center; margin: 20px auto;">Déconnexion</a>
     </div>
 </body>
 </html>

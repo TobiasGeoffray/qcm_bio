@@ -2,8 +2,8 @@ from app import app, db, User
 from werkzeug.security import generate_password_hash
 
 # --- Modifiez ici l'identifiant souhaité ---
-USERNAME = "Sonja"
-PASSWORD = "toniflo80"
+USERNAME = "Clara"
+PASSWORD = "13.05.2023"
 # --------------------------------------------
 
 def add_user():

@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 import os
 import random
 from datetime import datetime
@@ -9,7 +10,17 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), 'static', 'cours')
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50 MB max
+ALLOWED_EXTENSIONS = {'pdf'}
+
+# Création du dossier d'upload s'il n'existe pas
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
 db = SQLAlchemy(app)
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Modèles de la base de données
 class User(db.Model):
@@ -22,6 +33,12 @@ class Quiz(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     questions = db.Column(db.String(5000), nullable=False)  # Stocké sous forme JSON
+
+class Cour(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    filename = db.Column(db.String(200), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
 class Result(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -70,6 +87,7 @@ def dashboard():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     quizzes = Quiz.query.all()
+    cours = Cour.query.all()
 
     # Classement général : score total par utilisateur, trié du plus haut au plus bas
     leaderboard_raw = db.session.query(
@@ -145,6 +163,7 @@ def dashboard():
     return render_template(
         'dashboard.html',
         quizzes=quizzes,
+        cours=cours,
         is_admin=session.get('is_admin'),
         leaderboard=leaderboard,
         all_results=all_results
@@ -259,6 +278,92 @@ def results(result_id):
             user_answers = {}
 
     return render_template('results.html', result=result, quiz=quiz, questions=questions, user_answers=user_answers)
+
+@app.route('/create_cour', methods=['GET', 'POST'])
+def create_cour():
+    if not session.get('is_admin'):
+        return redirect(url_for('dashboard'))
+    if request.method == 'POST':
+        # Vérifier qu'un titre et un fichier sont fournis
+        if 'title' not in request.form or not request.form['title']:
+            flash('Le titre du cours est requis.', 'error')
+            return redirect(url_for('create_cour'))
+        
+        if 'pdf_file' not in request.files:
+            flash('Aucun fichier PDF fourni.', 'error')
+            return redirect(url_for('create_cour'))
+        
+        file = request.files['pdf_file']
+        
+        if file.filename == '':
+            flash('Aucun fichier sélectionné.', 'error')
+            return redirect(url_for('create_cour'))
+        
+        if not allowed_file(file.filename):
+            flash('Seuls les fichiers PDF sont autorisés.', 'error')
+            return redirect(url_for('create_cour'))
+        
+        # Sauvegarder le fichier avec un nom sécurisé
+        filename = secure_filename(file.filename)
+        # Ajouter un timestamp pour éviter les doublons
+        import time
+        filename = f"{int(time.time())}_{filename}"
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+        
+        # Créer l'enregistrement dans la BD
+        title = request.form['title']
+        new_cour = Cour(title=title, filename=filename)
+        db.session.add(new_cour)
+        db.session.commit()
+        
+        flash('Cours créé avec succès !', 'success')
+        return redirect(url_for('dashboard'))
+    
+    return render_template('create_cour.html')
+
+@app.route('/view_cour/<int:cour_id>')
+def view_cour(cour_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    cour = Cour.query.get_or_404(cour_id)
+    pdf_url = url_for('static', filename=f'cours/{cour.filename}')
+
+    return render_template('view_cour.html', cour=cour, pdf_url=pdf_url)
+
+@app.route('/download_cour/<int:cour_id>')
+def download_cour(cour_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    cour = Cour.query.get_or_404(cour_id)
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], cour.filename)
+    
+    if not os.path.exists(filepath):
+        flash('Le fichier du cours n\'existe plus.', 'error')
+        return redirect(url_for('dashboard'))
+    
+    return send_file(filepath, as_attachment=True, download_name=f"{cour.title}.pdf")
+
+@app.route('/delete_cour/<int:cour_id>', methods=['POST'])
+def delete_cour(cour_id):
+    if not session.get('is_admin'):
+        return redirect(url_for('dashboard'))
+    
+    cour = Cour.query.get_or_404(cour_id)
+    
+    # Supprimer le fichier du serveur
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], cour.filename)
+    if os.path.exists(filepath):
+        os.remove(filepath)
+    
+    # Supprimer l'enregistrement de la BD
+    db.session.delete(cour)
+    db.session.commit()
+    
+    flash('Cours supprimé avec succès !', 'success')
+    return redirect(url_for('dashboard'))
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
