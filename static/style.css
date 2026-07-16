@@ -286,4 +286,5 @@ button:hover {
 .poissons {
     background-image: url(https://thumbs.dreamstime.com/b/fond-d-eau-de-l-art-pixel-texture-marine-transparente-illustration-vectorielle-223655049.jpg);
     width: 100%;
+    border-radius: 30px;
 }
