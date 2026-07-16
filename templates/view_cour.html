@@ -80,20 +80,8 @@
 </head>
 <body>
     <div class="viewer-container">
-        <div class="viewer-header">
-            <h1>📖 {{ cour.title }}</h1>
-            <div class="viewer-controls">
-                <a href="{{ url_for('download_cour', cour_id=cour.id) }}" class="btn-action btn-download">⬇️ Télécharger</a>
-                <a href="{{ url_for('dashboard') }}" class="btn-action btn-back">◀ Retour</a>
-            </div>
-        </div>
-
         <div class="pdf-viewer">
             <iframe src="{{ pdf_url }}" type="application/pdf"></iframe>
-        </div>
-
-        <div class="viewer-footer">
-            <p>💡 Conseil : Si le PDF ne s'affiche pas correctement, cliquez sur le bouton "Télécharger" pour l'ouvrir avec votre lecteur PDF préféré.</p>
         </div>
     </div>
 </body>

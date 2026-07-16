@@ -190,7 +190,15 @@ button:hover {
 }
 
 .create_quiz {
-    background-image: url(meduses-1.jpg);
+    background-image: url(img/meduses-1.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.create_cours {
+    background-image: url(https://img.magnific.com/vecteurs-premium/illustration-vectorielle-plate-ensemble-elements-science-biologie-dessinee-main_1182378-242.jpg?semt=ais_hybrid&w=740&q=80);
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;

@@ -42,6 +42,7 @@
             gap: 10px;
             justify-content: center;
         }
+        /* Uniformise l'apparence des boutons (éléments <button> et <a>) */
         .button-container button,
         .button-container a {
             padding: 10px 20px;
@@ -50,7 +51,14 @@
             cursor: pointer;
             font-size: 14px;
             text-decoration: none;
-            display: inline-block;
+            /* utiliser inline-flex pour centrer verticalement le texte */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            box-sizing: border-box;
+            height: 40px; /* fixe la hauteur pour éviter les différences entre browsers */
+            margin-top:5px;
         }
         .button-container button {
             background-color: #007bff;
@@ -66,11 +74,13 @@
         .button-container a:hover {
             background-color: #545b62;
         }
+
     </style>
 </head>
-<body class="db">
+<body class="create_cours">
     <div class="container">
         <h1>Ajouter un nouveau cours</h1>
+        <img src="{{ url_for('static', filename='dragon.png') }}" style="margin-left: 80%;width: 7%;image-rendering: pixelated;">
 
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -96,7 +106,7 @@
 
                 <div class="button-container">
                     <button type="submit">Ajouter le cours</button>
-                    <a href="{{ url_for('dashboard') }}">Retour</a>
+                    <a href="{{ url_for('dashboard') }}" style="background: limegreen;">Retour</a>
                 </div>
             </form>
         </div>
