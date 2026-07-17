@@ -11,16 +11,22 @@ app.secret_key = os.urandom(24)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), 'static', 'cours')
+app.config['IMG_UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), 'static', 'img')
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50 MB max
 ALLOWED_EXTENSIONS = {'pdf'}
+ALLOWED_IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
-# Création du dossier d'upload s'il n'existe pas
+# Création des dossiers d'upload s'ils n'existent pas
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+os.makedirs(app.config['IMG_UPLOAD_FOLDER'], exist_ok=True)
 
 db = SQLAlchemy(app)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def allowed_image_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_IMAGE_EXTENSIONS
 
 # Modèles de la base de données
 class User(db.Model):
@@ -183,15 +189,31 @@ def create_quiz():
         wrong_answer_1s = request.form.getlist('wrong_answer_1[]')
         wrong_answer_2s = request.form.getlist('wrong_answer_2[]')
         explanations = request.form.getlist('explanation[]')
+        # Récupère les images
+        question_images = request.files.getlist('question_image[]')
 
         # Crée une liste de questions au format JSON
         questions = []
         for i in range(len(question_texts)):
+            # Gestion de l'image si elle a été uploadée
+            image_filename = None
+            if i < len(question_images) and question_images[i].filename != '':
+                file = question_images[i]
+                if allowed_image_file(file.filename):
+                    import time
+                    filename = secure_filename(file.filename)
+                    # Ajouter un timestamp pour éviter les doublons
+                    filename = f"{int(time.time())}_{i}_{filename}"
+                    filepath = os.path.join(app.config['IMG_UPLOAD_FOLDER'], filename)
+                    file.save(filepath)
+                    image_filename = filename
+
             question = {
                 "text": question_texts[i],
                 "correct_answer": correct_answers[i],
                 "wrong_answers": [wrong_answer_1s[i], wrong_answer_2s[i]],
-                "explanation": (explanations[i] if i < len(explanations) else "")
+                "explanation": (explanations[i] if i < len(explanations) else ""),
+                "image": image_filename
             }
             questions.append(question)
 

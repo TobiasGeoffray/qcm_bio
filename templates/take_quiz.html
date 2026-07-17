@@ -21,6 +21,12 @@
                 {% set q_index = loop.index0 %}
                 <div class="question">
                     <h3>{{ question.text }}</h3>
+                    <!-- Afficher l'image si elle existe -->
+                    {% if question.image %}
+                        <div style="margin: 15px 0; text-align: center;">
+                            <img src="{{ url_for('static', filename='img/' + question.image) }}" alt="Image de la question" style="max-width: 100%; max-height: 400px; border-radius: 8px;">
+                        </div>
+                    {% endif %}
                     <!-- Boutons radio pour toutes les réponses, dans un ordre mélangé -->
                     {% for answer in question.all_answers %}
                         <div class="answer-option">

@@ -10,7 +10,7 @@
 <body class="create_quiz">
     <div class="container">
         <h1>Créer un QCM</h1>
-        <form method="POST" action="{{ url_for('create_quiz') }}">
+        <form method="POST" action="{{ url_for('create_quiz') }}" enctype="multipart/form-data">
             <input type="text" class="titre_qcm" name="title" placeholder="Titre du QCM" required>
             <div id="questions-container">
                 <div class="question">
@@ -19,6 +19,10 @@
                     <input type="text" name="wrong_answer_1[]" placeholder="Mauvaise réponse 1" required>
                     <input type="text" name="wrong_answer_2[]" placeholder="Mauvaise réponse 2" required>
                     <textarea name="explanation[]" placeholder="Explication" rows="2" style="width:70%;margin-top: 5px;"></textarea>
+                    <div style="margin-top: 10px;">
+                        <label for="question_image_0" style="display: block; margin-bottom: 5px;">Image (optionnelle) :</label>
+                        <input type="file" id="question_image_0" name="question_image[]" accept="image/*">
+                    </div>
                 </div>
             </div>
             <button type="button" onclick="addQuestion()">Ajouter une question</button>
