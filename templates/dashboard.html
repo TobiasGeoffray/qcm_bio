@@ -5,25 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tableau de bord - QCM</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .poissons-container {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
+            margin: 15px 0;
+            background-image: url(https://img.magnific.com/vecteurs-libre/fond-sous-marin-ocean-mer-recifs-coralliens-fond-du-sable-algues-poussent-rochers-sous-rayon-soleil-tombant-haut-scene-marine-vie-tropicale-sous-marine-illustration-vectorielle-dessin-anime_107791-8704.jpg?semt=ais_hybrid&w=740);
+            border-radius: 10px;
+        }
+        .floating-img {
+            position: absolute;
+            image-rendering: pixelated;
+            max-height: 100%;
+            width: auto;
+            transition: transform 0.1s linear;
+        }
+    </style>
 </head>
 <body class="db">
     <div class="container">
         <h1>Bienvenue, {{ session.username if 'user_id' in session else 'Invité' }} !</h1>
-        <div class="poissons">
-        <img src="{{ url_for('static', filename='globe.png') }}" style="margin-left: 10%;width: 20%;image-rendering: pixelated;">
-        <img src="{{ url_for('static', filename='dorry.png') }}" style="margin-left: 5%;width: 10%;image-rendering: pixelated;">
-        <img src="{{ url_for('static', filename='dragon.png') }}" style="margin-left: 10%;width: 10%;image-rendering: pixelated;">
-        <img src="{{ url_for('static', filename='hippocampe.png') }}" style="margin-left: 3%;width: 20%;image-rendering: pixelated;">
-        </div>
-        {% if is_admin %}
-            <h2>Créer un QCM</h2>
-            <a href="{{ url_for('create_quiz') }}" class="button">Nouveau QCM</a>
-        {% endif %}
+        <div class="poissons-container" id="pixelart-gallery"></div>
+
         <h2>QCM disponibles</h2>
         <ul>
             {% for quiz in quizzes %}
                 <li>
-                    <a style="max-width:70%;" href="{{ url_for('take_quiz', quiz_id=quiz.id) }}">{{ quiz.title }} </a>
+                    <a href="{{ url_for('take_quiz', quiz_id=quiz.id) }}" classe="button">{{ quiz.title }}</a>
                     {% if is_admin %}
                         <form method="POST" action="{{ url_for('delete_quiz', quiz_id=quiz.id) }}" style="display:inline;" onsubmit="return confirm('Supprimer ce QCM ? Cette action est irréversible.');">
                             <button type="submit" style="width:auto; padding:4px 10px; background: palevioletred;margin-left: 70%;margin-right: 20%;">Supprimer</button>
@@ -32,10 +42,10 @@
                 </li>
             {% endfor %}
         </ul>
+
+        <a href="{{ url_for('create_quiz') }}" class="button" style="border: 2px solid palevioletred; background: palevioletred;color: white;text-decoration: none"> Créer un QCM </a>
+
         <h2>📚 Cours disponibles</h2>
-        {% if is_admin %}
-            <a href="{{ url_for('create_cour') }}" class="button">Ajouter un cours</a>
-        {% endif %}
         <ul>
             {% for cour in cours %}
                 <li>
@@ -49,6 +59,12 @@
                 </li>
             {% endfor %}
         </ul>
+        <a href="{{ url_for('create_cour') }}" class="button" style="border: 2px solid palevioletred; background: palevioletred;color: white;text-decoration: none">Ajouter un cours</a>
+
+        
+        <h2>🎨 Ajoute un Poisson à l'Aquarium </h2>
+        <a href="{{ url_for('create_pixelart') }}" style="border: 2px solid palevioletred; background: palevioletred;color: white;text-decoration: none">Ouvrir l'éditeur de Poisson</a>
+
         <h2>🏆 Qui sont les plus assidus?</h2>
         {% if leaderboard %}
             <div class="table-responsive">
@@ -125,5 +141,151 @@
         {% endif %}
         <a href="{{ url_for('logout') }}" style="display: block; text-align: center; margin: 20px auto;">Déconnexion</a>
     </div>
+
+    <script>
+        // Animation des pixelarts du dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            const gallery = document.getElementById('pixelart-gallery');
+            if (!gallery) return;
+
+            const galleryWidth = gallery.offsetWidth;
+            const galleryHeight = gallery.offsetHeight;
+            const staticImgUrl = '{{ url_for("static", filename="img/") }}';
+            
+            // Paramètres de l'animation
+            const minSpeed = 1; // vitesse minimale (pixels par frame)
+            const maxSpeed = 3; // vitesse maximale (pixels par frame)
+            const minImages = 2; // minimum d'images à l'écran
+            const baseSpawnRate = 0.03; // taux de base (probabilité par frame)
+            const decayRate = 0.9995; // facteur de décroissance
+            
+            // État
+            let images = [];
+            let spawnTimer = 0;
+            let spawnRate = baseSpawnRate;
+            let lastTime = 0;
+            let imgCache = null;
+            
+            // Fonction pour obtenir les images du dossier /static/img/
+            async function fetchImages() {
+                if (imgCache) return imgCache;
+                
+                try {
+                    const response = await fetch('{{ url_for("get_img_list") }}');
+                    const data = await response.json();
+                    imgCache = data.images || [];
+                    return imgCache;
+                } catch (e) {
+                    console.log('Utilisation des images par défaut :', e);
+                    // Images par défaut si la route n'existe pas encore
+                    imgCache = [
+                        'bulles.png',
+                        'bulles2.png',
+                        'dragon.png'
+                    ];
+                    return imgCache;
+                }
+            }
+            
+            // Créer une nouvelle image
+            function createImage(imgName) {
+                const img = document.createElement('img');
+                img.className = 'floating-img';
+                img.src = staticImgUrl + imgName;
+                img.alt = 'Pixel Art';
+                
+                // Position aléatoire en haut
+                const heightPercent = Math.random() * 0.7 + 0.15; // entre 15% et 85% de la hauteur
+                const top = galleryHeight * heightPercent;
+                
+                // Vitesse aléatoire (négative = droite à gauche, positive = gauche à droite)
+                const speed = (Math.random() * (maxSpeed - minSpeed) + minSpeed) * (Math.random() > 0.5 ? -1 : 1);
+                
+                // Position de départ selon le sens
+                const imgWidth = 100; // estimation initiale, sera ajustée
+                const startX = speed > 0 ? -imgWidth : galleryWidth + imgWidth;
+                
+                img.style.top = `${top}px`;
+                img.style.left = `${startX}px`;
+                
+                // Taille aléatoire
+                const scale = Math.random() * 3 + 2; // entre 200% et 500%
+                img.style.transform = `scale(${scale})`;
+                
+                gallery.appendChild(img);
+                
+                // Stocker les infos pour l'animation
+                images.push({
+                    element: img,
+                    x: startX,
+                    y: top,
+                    speed: speed,
+                    scale: scale
+                });
+                
+                return img;
+            }
+            
+            // Mettre à jour l'animation
+            function updateAnimation(timestamp) {
+                if (!lastTime) {
+                    lastTime = timestamp;
+                    requestAnimationFrame(updateAnimation);
+                    return;
+                }
+                
+                const deltaTime = timestamp - lastTime;
+                lastTime = timestamp;
+                
+                // Mettre à jour la position de chaque image
+                for (let i = images.length - 1; i >= 0; i--) {
+                    const imgData = images[i];
+                    imgData.x += imgData.speed * (deltaTime / 16.67); // 60fps
+                    imgData.element.style.left = `${imgData.x}px`;
+                    
+                    // Supprimer si l'image est complètement hors écran
+                    // Si l'image va vers la gauche (speed < 0), supprimer quand elle est trop à gauche
+                    // Si l'image va vers la droite (speed > 0), supprimer quand elle est trop à droite
+                    if ((imgData.speed < 0 && imgData.x < -imgData.element.offsetWidth) ||
+                        (imgData.speed > 0 && imgData.x > galleryWidth + imgData.element.offsetWidth)) {
+                        imgData.element.remove();
+                        images.splice(i, 1);
+                    }
+                }
+                
+                // Gérer l'apparition de nouvelles images
+                spawnTimer += deltaTime;
+                
+                // Taux d'apparition décroissant
+                if (images.length < minImages || Math.random() < spawnRate) {
+                    fetchImages().then(imgList => {
+                        if (imgList.length > 0) {
+                            const randomImg = imgList[Math.floor(Math.random() * imgList.length)];
+                            createImage(randomImg);
+                            
+                            // Réduire le taux d'apparition (mais pas en dessous d'un certain seuil)
+                            spawnRate = Math.max(baseSpawnRate * 0.3, spawnRate * decayRate);
+                        }
+                    });
+                    spawnTimer = 0;
+                }
+                
+                // Si on a moins de minImages, forcer l'apparition
+                if (images.length < minImages) {
+                    fetchImages().then(imgList => {
+                        if (imgList.length > 0) {
+                            const randomImg = imgList[Math.floor(Math.random() * imgList.length)];
+                            createImage(randomImg);
+                        }
+                    });
+                }
+                
+                requestAnimationFrame(updateAnimation);
+            }
+            
+            // Démarrer l'animation
+            requestAnimationFrame(updateAnimation);
+        });
+    </script>
 </body>
 </html>

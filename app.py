@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file
+from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
 import random
+import time
 from datetime import datetime
 
 app = Flask(__name__)
@@ -12,6 +13,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), 'static', 'cours')
 app.config['IMG_UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), 'static', 'img')
+app.config['QUIZ_IMG_UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), 'static', 'img_questions')
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50 MB max
 ALLOWED_EXTENSIONS = {'pdf'}
 ALLOWED_IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
@@ -19,6 +21,8 @@ ALLOWED_IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 # Création des dossiers d'upload s'ils n'existent pas
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['IMG_UPLOAD_FOLDER'], exist_ok=True)
+os.makedirs(app.config['QUIZ_IMG_UPLOAD_FOLDER'], exist_ok=True)
+
 
 db = SQLAlchemy(app)
 
@@ -87,6 +91,46 @@ def logout():
     session.pop('is_admin', None)
     session.pop('username', None)
     return redirect(url_for('home'))
+
+@app.route('/create_username', methods=['GET', 'POST'])
+def create_username():
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '')
+        confirm_password = request.form.get('confirm_password', '')
+        
+        # Validations
+        if not username or not password or not confirm_password:
+            flash('Tous les champs sont obligatoires.', 'error')
+            return redirect(url_for('create_username'))
+        
+        if len(username) <= 3:
+            flash('Le nom d\'utilisateur doit contenir au moins 3 caractères.', 'error')
+            return redirect(url_for('create_username'))
+        
+        if len(password) < 6:
+            flash('Le mot de passe doit contenir au moins 6 caractères.', 'error')
+            return redirect(url_for('create_username'))
+        
+        if password != confirm_password:
+            flash('Les mots de passe ne correspondent pas.', 'error')
+            return redirect(url_for('create_username'))
+        
+        # Vérifier si le nom d'utilisateur existe déjà
+        if User.query.filter_by(username=username).first():
+            flash('Ce nom d\'utilisateur est déjà pris.', 'error')
+            return redirect(url_for('create_username'))
+        
+        # Créer le nouvel utilisateur
+        hashed_password = generate_password_hash(password)
+        new_user = User(username=username, password=hashed_password)
+        db.session.add(new_user)
+        db.session.commit()
+        
+        flash('Compte créé avec succès ! Vous pouvez maintenant vous connecter.', 'success')
+        return redirect(url_for('login'))
+    
+    return render_template('create_username.html')
 
 @app.route('/dashboard')
 def dashboard():
@@ -204,7 +248,7 @@ def create_quiz():
                     filename = secure_filename(file.filename)
                     # Ajouter un timestamp pour éviter les doublons
                     filename = f"{int(time.time())}_{i}_{filename}"
-                    filepath = os.path.join(app.config['IMG_UPLOAD_FOLDER'], filename)
+                    filepath = os.path.join(app.config['QUIZ_IMG_UPLOAD_FOLDER'], filename)
                     file.save(filepath)
                     image_filename = filename
 
@@ -386,6 +430,54 @@ def delete_cour(cour_id):
     
     flash('Cours supprimé avec succès !', 'success')
     return redirect(url_for('dashboard'))
+
+
+@app.route('/create_pixelart')
+def create_pixelart():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    return render_template('create_pixelart.html')
+
+
+@app.route('/get_img_list')
+def get_img_list():
+    img_dir = app.config['IMG_UPLOAD_FOLDER']
+    img_files = []
+    
+    if os.path.exists(img_dir):
+        for filename in os.listdir(img_dir):
+            if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
+                img_files.append(filename)
+    
+    return jsonify({'images': img_files})
+
+
+@app.route('/save_pixelart', methods=['POST'])
+def save_pixelart():
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'error': 'Non autorisé - veuillez vous connecter'}), 401
+    
+    if 'image' not in request.files:
+        return jsonify({'success': False, 'error': 'Aucune image fournie'}), 400
+    
+    file = request.files['image']
+    
+    if file.filename == '':
+        return jsonify({'success': False, 'error': 'Aucun fichier sélectionné'}), 400
+    
+    # Générer un nom de fichier sécurisé
+    name = request.form.get('name', 'pixelart')
+    timestamp = int(time.time())
+    filename = f"{secure_filename(name)}_{timestamp}.png"
+    filepath = os.path.join(app.config['IMG_UPLOAD_FOLDER'], filename)
+    
+    try:
+        # Sauvegarder le fichier
+        file.save(filepath)
+        return jsonify({'success': True, 'filename': filename, 'path': filepath})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

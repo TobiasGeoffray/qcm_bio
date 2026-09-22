@@ -15,7 +15,7 @@
             </div>
         </div>
         <h1 style="display: inline-block">{{ quiz.title }}</h1>
-        <img src="{{ url_for('static', filename='dorry.png') }}" style="margin-left: 80%;width: max(32px,7%);image-rendering: pixelated;">
+        <img src="{{ url_for('static', filename='img/dorry.png') }}" style="margin-left: 80%;width: max(32px,7%);image-rendering: pixelated;">
         <form method="POST" action="{{ url_for('take_quiz', quiz_id=quiz.id) }}" id="quiz-form">
             {% for question in questions %}
                 {% set q_index = loop.index0 %}
@@ -24,7 +24,7 @@
                     <!-- Afficher l'image si elle existe -->
                     {% if question.image %}
                         <div style="margin: 15px 0; text-align: center;">
-                            <img src="{{ url_for('static', filename='img/' + question.image) }}" alt="Image de la question" style="max-width: 100%; max-height: 400px; border-radius: 8px;">
+                            <img src="{{ url_for('static', filename='img_questions/' + question.image) }}" alt="Image de la question" style="max-width: 100%; max-height: 400px; border-radius: 8px;">
                         </div>
                     {% endif %}
                     <!-- Boutons radio pour toutes les réponses, dans un ordre mélangé -->

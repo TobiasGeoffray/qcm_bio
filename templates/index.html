@@ -16,11 +16,13 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
-        <form method="POST" action="{{ url_for('login') }}">
+        <form method="POST" action="{{ url_for('login') }}" class="auth-form">
             <input type="text" name="username" placeholder="Nom d'utilisateur" required>
             <input type="password" name="password" placeholder="Mot de passe" required>
             <button type="submit">Se connecter</button>
         </form>
+        <h4>Pas encore de compte ?</h4>
+        <a class="button" href="{{ url_for('create_username') }}">Créer un Compte</a>
     </div>
 </body>
 </html>

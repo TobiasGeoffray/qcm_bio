@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - QCM Bio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .auth-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .password-requirements {
+            font-size: 0.8em;
+            color: #aaa;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body class="login-page">
+    <div class="container">
+        <h1>Créer un compte</h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form method="POST" action="{{ url_for('create_username') }}" class="auth-form">
+            <div class="form-group">
+                <label for="username">Nom d'utilisateur</label>
+                <input type="text" id="username" name="username" placeholder="Choisissez un nom d'utilisateur" required minlength="3" maxlength="20">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" name="password" placeholder="Créez un mot de passe" required minlength="6">
+                <p class="password-requirements">Minimum 6 caractères</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirm_password">Confirmer le mot de passe</label>
+                <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirmez votre mot de passe" required minlength="6">
+            </div>
+            
+            <button type="submit">S'inscrire</button>
+        </form>
+        
+        <h4>Déjà un compte ?</h4>
+        <a class="button" href="{{ url_for('login') }}">Se connecter</a>
+    </div>
+</body>
+</html>

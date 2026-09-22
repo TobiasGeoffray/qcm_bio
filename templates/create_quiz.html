@@ -10,6 +10,7 @@
 <body class="create_quiz">
     <div class="container">
         <h1>Créer un QCM</h1>
+        <img src="{{ url_for('static', filename='img/nudibranche.png') }}" style="margin-left: 80%;width: max(32px,10%);image-rendering: pixelated;">
         <form method="POST" action="{{ url_for('create_quiz') }}" enctype="multipart/form-data">
             <input type="text" class="titre_qcm" name="title" placeholder="Titre du QCM" required>
             <div id="questions-container">

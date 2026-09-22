@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer un Pixel Art - QCM Bio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .pixelart-container {
+            background: rgba(50, 50, 50, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .pixelart-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .pixelart-grid-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            max-width: 100%;
+        }
+        #pixelart-grid {
+            display: inline-grid;
+            gap: 0;
+            background: transparent;
+            border: 2px solid #333;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .pixel {
+            width: clamp(8px, 2.5vw, 20px);
+            height: clamp(8px, 2.5vw, 20px);
+            border: 1px solid #eee;
+            box-sizing: border-box;
+            cursor: pointer;
+            transition: background-color 0.1s;
+        }
+        .pixel:hover {
+            opacity: 0.8;
+        }
+        .color-palette {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #555;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .color-option:hover {
+            transform: scale(1.2);
+            border-color: white;
+        }
+        .color-option.active {
+            border: 3px solid #fff;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+        }
+        .tool-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .tool-section h3 {
+            margin-top: 0;
+            color: #d4edda;
+        }
+        .size-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .size-option {
+            padding: 5px 10px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .size-option.active {
+            background: #fff;
+            color: #007BFF;
+            font-weight: bold;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .preview-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .preview-container h3 {
+            color: #d4edda;
+            margin-bottom: 10px;
+        }
+        #pixelart-preview {
+            max-width: 100%;
+            border: 2px solid #333;
+            background: transparent;
+            image-rendering: pixelated;
+        }
+        input[type="text"] {
+            background: white;
+            color: #333;
+            border: 1px solid #ccc;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        .pixelart-form {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .pixelart-form label {
+            display: block;
+            margin-bottom: 8px;
+            color: #d4edda;
+            font-weight: bold;
+        }
+        .pixelart-form input[type="text"] {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body class="create_cours">
+    <div class="container pixelart-container">
+        <h1 style="color: #d4edda; text-align: center;">Créateur de Pixel Art</h1>
+        
+        <div class="tool-section">
+            <div class="pixelart-controls">
+                <div>
+                    <h3>Nom de l'image</h3>
+                    <input type="text" id="pixelart-name" placeholder="Mon pixel art" value="pixelart_{{ session.username if 'username' in session else 'invite' }}">
+                </div>
+                <div>
+                    <h3>Taille de la grille</h3>
+                    <div class="size-controls">
+                        <button class="size-option active" data-size="16">16x16</button>
+                        <button class="size-option" data-size="32">32x32</button>
+                    </div>
+                </div>
+                <div>
+                    <h3>Fond</h3>
+                    <div class="size-controls">
+                        <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                            <input type="checkbox" id="transparent-bg" checked>
+                            <span>Transparent</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-section">
+            <h3>Palette de couleurs</h3>
+            <div class="color-palette" id="color-palette">
+                <div class="color-option" style="background-color: #000000;" data-color="#000000" title="Noir"></div>
+                <div class="color-option" style="background-color: #FFFFFF;" data-color="#FFFFFF" title="Blanc"></div>
+                <div class="color-option" style="background-color: #FF0000;" data-color="#FF0000" title="Rouge"></div>
+                <div class="color-option" style="background-color: #00FF00;" data-color="#00FF00" title="Vert"></div>
+                <div class="color-option" style="background-color: #0000FF;" data-color="#0000FF" title="Bleu"></div>
+                <div class="color-option" style="background-color: #FFFF00;" data-color="#FFFF00" title="Jaune"></div>
+                <div class="color-option" style="background-color: #FF00FF;" data-color="#FF00FF" title="Magenta"></div>
+                <div class="color-option" style="background-color: #00FFFF;" data-color="#00FFFF" title="Cyan"></div>
+                <div class="color-option" style="background-color: #FFA500;" data-color="#FFA500" title="Orange"></div>
+                <div class="color-option" style="background-color: #800080;" data-color="#800080" title="Violet"></div>
+                <div class="color-option" style="background-color: #808080;" data-color="#808080" title="Gris"></div>
+                <div class="color-option" style="background-color: #008000;" data-color="#008000" title="Vert foncé"></div>
+                <div class="color-option" style="background-color: #800000;" data-color="#800000" title="Rouge foncé"></div>
+                <div class="color-option" style="background-color: #000080;" data-color="#000080" title="Bleu foncé"></div>
+                <div class="color-option" style="background-color: #FFC0CB;" data-color="#FFC0CB" title="Rose"></div>
+                <div class="color-option" style="background-color: #808000;" data-color="#808000" title="Olive"></div>
+                <div class="color-option" style="background-color: #008080;" data-color="#008080" title="Teal"></div>
+                <div class="color-option" style="background-color: #FFFFFF; border: 1px dashed #555;" data-color="transparent" title="Effacer"></div>
+            </div>
+        </div>
+
+        <div class="pixelart-grid-container">
+            <div id="pixelart-grid"></div>
+        </div>
+
+        <div class="action-buttons">
+            <button id="save-pixelart" class="button" style="background: #28a745; padding: 12px 30px; font-size: 16px;">Enregistrer</button>
+        </div>
+
+        <div class="preview-container" id="preview-section" style="display: none;">
+            <h3>Prévisualisation</h3>
+            <canvas id="pixelart-preview"></canvas>
+        </div>
+
+        <div id="pixelart-message" style="margin-top: 20px; text-align: center; color: #d4edda; font-weight: bold;"></div>
+    </div>
+
+    <script src="{{ url_for('static', filename='pixelart.js') }}"></script>
+    <script>
+        // Initialisation avec les chemins Flask
+        window.flaskPaths = {
+            saveUrl: '{{ url_for("save_pixelart") }}'
+        };
+    </script>
+</body>
+</html>

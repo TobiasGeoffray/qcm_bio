@@ -14,7 +14,7 @@ a {
     text-decoration-color: #d4edda; ;
 }
 
-h1, h2, h3, label {
+h1, h2, h3,h4, label, p {
     color : #d4edda;
 }
 
@@ -190,7 +190,7 @@ button:hover {
 }
 
 .create_quiz {
-    background-image: url(meduses-1.jpg);
+    background-image: url(https://cdn.pixabay.com/photo/2020/03/19/12/16/jellyfish-4947355_640.jpg);
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
