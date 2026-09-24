@@ -42,9 +42,7 @@
                 </li>
             {% endfor %}
         </ul>
-        {% if is_admin %}
-            <a href="{{ url_for('create_quiz') }}" class="button" style="border: 2px solid palevioletred; background: palevioletred;color: white;text-decoration: none"> Créer un QCM </a>
-        {% endif %}
+        <a href="{{ url_for('create_quiz') }}" class="button" style="border: 2px solid palevioletred; background: palevioletred;color: white;text-decoration: none"> Créer un QCM </a>
         <h2>📚 Cours disponibles</h2>
         <ul>
             {% for cour in cours %}
@@ -59,9 +57,7 @@
                 </li>
             {% endfor %}
         </ul>
-        {% if is_admin %}
-            <a href="{{ url_for('create_cour') }}" class="button" style="border: 2px solid palevioletred; background: palevioletred;color: white;text-decoration: none">Ajouter un cours</a>
-        {% endif %}
+        <a href="{{ url_for('create_cour') }}" class="button" style="border: 2px solid palevioletred; background: palevioletred;color: white;text-decoration: none">Ajouter un cours</a>
         
         <h2>🎨 Ajoute un Poisson à l'Aquarium </h2>
         <a href="{{ url_for('create_pixelart') }}" style="border: 2px solid palevioletred; background: palevioletred;color: white;text-decoration: none">Ouvrir l'éditeur de Poisson</a>

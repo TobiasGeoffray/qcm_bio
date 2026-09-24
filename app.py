@@ -223,8 +223,8 @@ def dashboard():
 def create_quiz():
     if request.method == 'POST':
         print("Données reçues :", request.form)  # Affiche dans le terminal
-    if not session.get('is_admin'):
-        return redirect(url_for('dashboard'))
+    """if not session.get('is_admin'):
+        return redirect(url_for('dashboard'))"""
     if request.method == 'POST':
         title = request.form['title']
         # Récupère toutes les questions et réponses
@@ -347,8 +347,8 @@ def results(result_id):
 
 @app.route('/create_cour', methods=['GET', 'POST'])
 def create_cour():
-    if not session.get('is_admin'):
-        return redirect(url_for('dashboard'))
+    """if not session.get('is_admin'):
+        return redirect(url_for('dashboard'))"""
     if request.method == 'POST':
         # Vérifier qu'un titre et un fichier sont fournis
         if 'title' not in request.form or not request.form['title']:
